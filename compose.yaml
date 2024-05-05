@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
   postgres-service:
@@ -29,7 +29,7 @@ services:
     restart: always
     environment:
       - API_SECURITY_TOKEN_SECRET=Helena090821
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-service:5432/auth-api-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-service:5432/process-db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=090821
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
