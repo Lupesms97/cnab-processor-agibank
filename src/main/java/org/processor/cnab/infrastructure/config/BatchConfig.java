@@ -1,7 +1,8 @@
 package org.processor.cnab.infrastructure.config;
 
 import org.processor.cnab.application.dto.TransactionCNAB;
-import org.processor.cnab.application.dto.TransactionEntity;
+import org.processor.cnab.domain.entity.TransactionEntity;
+import org.processor.cnab.presentation.mapper.FromDto;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -11,6 +12,8 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.transform.Range;
@@ -19,14 +22,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.io.File;
+import javax.sql.DataSource;
+
 
 @Configuration
 public class BatchConfig {
-    private PlatformTransactionManager transactionManager;
-    private JobRepository jobRepository;
+    private final PlatformTransactionManager transactionManager;
+    private final JobRepository jobRepository;
 
-    public BatchConfig(PlatformTransactionManager transactionManager, JobRepository jobRepository) {
+    public BatchConfig(final PlatformTransactionManager transactionManager,
+                       final JobRepository jobRepository) {
         this.transactionManager = transactionManager;
         this.jobRepository = jobRepository;
     }
@@ -69,18 +74,34 @@ public class BatchConfig {
                         new Range(31, 42),
                         new Range(43, 48),
                         new Range(49, 62),
-                        new Range(63, 81))
+                        new Range(63, 80))
                 .names("type",
                         "date",
                         "amount",
                         "cpf",
                         "card",
-                        "time",
+                        "hour",
                         "storeOwner",
                         "storeName")
                 .targetType(TransactionCNAB.class)
                 .build();
     }
+
+    @Bean
+    ItemProcessor<TransactionCNAB, TransactionEntity> processor() {
+        return item -> new FromDto().toEntity(item);
+    }
+
+    @Bean
+    public JdbcBatchItemWriter<TransactionEntity> writer(DataSource dataSource) {
+        return new JdbcBatchItemWriterBuilder<TransactionEntity>()
+                .dataSource(dataSource)
+                .sql("INSERT INTO transaction_cnab (type, date, amount, cpf, card, hour, store_owner, store_name) " +
+                        "VALUES (:type, :date, :amount, :cpf, :card, :hour, :storeOwner, :storeName)")
+                .beanMapped()
+                .build();
+    }
+
 
 
 
