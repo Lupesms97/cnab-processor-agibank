@@ -1,0 +1,22 @@
+version: "3"
+
+
+services:
+  postgres-service:
+    image: postgres
+    container_name: process-db-postgres
+    restart: always
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "090821"
+      POSTGRES_DB: "process-db"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
