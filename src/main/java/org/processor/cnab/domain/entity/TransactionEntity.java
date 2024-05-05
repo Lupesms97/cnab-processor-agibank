@@ -1,9 +1,6 @@
 package org.processor.cnab.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +23,9 @@ public class TransactionEntity {
     private Long cpf;
     private String card;
     private Time hour;
+    @Column(name = "store_owner")
     private String storeOwner;
+    @Column(name = "store_name")
     private String storeName;
 
     public TransactionEntity(Integer type, Date date, BigDecimal amount, Long cpf, String card, Time hour, String storeOwner, String storeName) {
