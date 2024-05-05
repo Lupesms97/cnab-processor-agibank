@@ -8,7 +8,7 @@ public record TransactionCNAB(
         BigDecimal amount,
         Long cpf,
         String card,
-        String time,
+        String hour,
         String storeOwner,
         String storeName
 
