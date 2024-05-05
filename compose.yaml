@@ -1,6 +1,5 @@
 version: "3"
 
-
 services:
   postgres-service:
     image: postgres
@@ -15,26 +14,34 @@ services:
     ports:
       - "5432:5432"
     networks:
-          - postgres-compose-network
-  pgadmin:
-    image: dpage/pgadmin4:8.5
-    container_name: pgadmin-container
+      - spring-boot-postgres-network
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  web-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: "lupesms97@gmail.com"
-      PGADMIN_DEFAULT_PASSWORD: "LuPe0129**"
-    ports:
-      - "8080:80"
-    volumes:
-      - ./data/pgadmin:/var/lib/pgadmin
+      - API_SECURITY_TOKEN_SECRET=Helena090821
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-service:5432/auth-api-db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=090821
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_USE_SQL_COMMENTS=true
+      - SERVER_PORT=8080
     networks:
-          - postgres-compose-network
-
+      - spring-boot-postgres-network
+    depends_on:
+      - postgres-service
 networks:
-  default:
-    external: true
-  postgres-compose-network:
+  spring-boot-postgres-network:
     driver: bridge
-
-
 
