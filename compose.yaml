@@ -14,9 +14,27 @@ services:
       POSTGRES_DB: "process-db"
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    networks:
+          - postgres-compose-network
+  pgadmin:
+    image: dpage/pgadmin4:8.5
+    container_name: pgadmin-container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "lupesms97@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "LuPe0129**"
+    ports:
+      - "8080:80"
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin
+    networks:
+          - postgres-compose-network
+
+networks:
+  default:
+    external: true
+  postgres-compose-network:
+    driver: bridge
+
+
 
