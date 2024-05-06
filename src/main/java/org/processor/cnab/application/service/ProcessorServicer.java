@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -27,10 +28,15 @@ public class ProcessorServicer {
     public ProcessorServicer(
             @Value("${file.upload-dir}")String fileUploadDir,
             final Job job,
-            @Qualifier("jobLauncherAsync") final JobLauncher jobLauncher) {
+            @Qualifier("jobLauncherAsync") final JobLauncher jobLauncher) throws IOException {
         this.fileStorageLocation = Paths.get(fileUploadDir);
         this.job = job;
         this.jobLauncher = jobLauncher;
+        if (!Files.exists(this.fileStorageLocation)) {
+
+          Files.createDirectories(this.fileStorageLocation);
+
+        }
     }
 
 
