@@ -25,7 +25,7 @@ public class ProcessorServicer {
     private final JobLauncher jobLauncher;
 
     public ProcessorServicer(
-            @Value("${file.upload.dir}")String fileUploadDir,
+            @Value("${file.upload-dir}")String fileUploadDir,
             final Job job,
             @Qualifier("jobLauncherAsync") final JobLauncher jobLauncher) {
         this.fileStorageLocation = Paths.get(fileUploadDir);
@@ -35,8 +35,9 @@ public class ProcessorServicer {
 
 
     public void uploadFile(MultipartFile file) throws Exception {
-        var fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        var targetLocation = this.fileStorageLocation.resolve(fileName);
+
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Path targetLocation = fileStorageLocation.resolve(fileName);
 
         file.transferTo(targetLocation);
 
@@ -52,7 +53,6 @@ public class ProcessorServicer {
                 .toJobParameters();
 
         jobLauncher.run(job, jobParameters) ;
-        JobExecution jobExecution = jobLauncher.run(job, jobParameters);
 
     }
 }
