@@ -13,13 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
-@RequestMapping("/v1/process")
+@RequestMapping("v1/process")
 @RequiredArgsConstructor
 public class ProcessController {
 
     private final ProcessorServicer processorServicer;
 
-    @PostMapping("/cnab")
+    @PostMapping("cnab")
     public ResponseEntity<String> processCNAB(@RequestParam("file") MultipartFile file) throws Exception {
         processorServicer.uploadFile(file);
         return ResponseEntity.status(HttpStatus.CREATED).body("File processed successfully.");
